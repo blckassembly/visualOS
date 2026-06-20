@@ -270,60 +270,170 @@ export default function App() {
           </div>
         </section>
 
-        {/* SECTION 3: SYSTEM WORKFLOW TIMELINE */}
+        {/* SECTION 3: SYSTEM WORKFLOW TIMELINE - THE REAL ARCHITECTURE OF VISUALOS */}
         <section id="workflow" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 border-b border-black/5">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
             
-            <div className="lg:col-span-5 space-y-4">
+            <div className="lg:col-span-4 space-y-5">
               <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-neutral-50 text-black font-mono text-[9px] uppercase tracking-[0.18em] rounded-[2px] border border-black/10">
-                PIPELINE STATUS
+                PIPELINE ARCHITECTURE
               </span>
-              <h2 className="text-3xl font-light tracking-tight text-black font-display uppercase">
-                FROM PROMPT INTENT TO SCALE-LOCKED OUTPUT.
+              <h2 className="text-3xl font-light tracking-tight text-black font-display uppercase leading-tight">
+                THE REAL SYSTEM ARCHITECTURE
               </h2>
               <p className="text-xs text-neutral-500 font-light leading-relaxed">
-                Describe design intentions or drop high-level requirements. The platform breaks it down transparently and builds real functional layers inside the interactive CAD workstation. No hidden step.
+                From natural vector inputs on the client side, to dynamic structured object trees, through state validation down to industrial-grade manufacturing outputs.
               </p>
+              
+              <div className="pt-4 border-t border-black/15">
+                <span className="text-[10px] font-mono tracking-wider text-black block uppercase font-bold mb-1">
+                  Active Digital Twin Core
+                </span>
+                <p className="text-[11px] text-neutral-400 font-light">
+                  Continuous synchronizing pipeline: No lossy conversion between drafts and fabrication specifications.
+                </p>
+              </div>
             </div>
 
-            <div className="lg:col-span-7 space-y-8">
+            <div className="lg:col-span-8 grid grid-cols-1 md:grid-cols-2 gap-6" id="real-architecture-stack">
               
-              {/* Step 1 */}
-              <div className="flex gap-6 items-start pb-6 border-b border-black/5">
-                <div className="p-2 border border-black rounded-[2px] text-xs font-mono font-bold shrink-0 bg-neutral-50">
-                  STEP 01
-                </div>
-                <div className="space-y-1">
-                  <h4 className="text-sm font-semibold uppercase tracking-wider text-black">Natural Language Interpretation</h4>
-                  <p className="text-xs text-neutral-500 font-light leading-relaxed">
-                    Translate raw specs ("fashion tech pack in linen", "aerospace bracket specifying titanium 4 holes") into exact mathematical requirements in real-time.
+              {/* Card 1: Canvas OS */}
+              <div className="p-5 border border-black/15 bg-white rounded-[2px] flex flex-col justify-between space-y-4">
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="font-mono text-[10px] font-bold text-neutral-400">STAGE 01</span>
+                    <span className="w-1.5 h-1.5 bg-black rounded-full" />
+                  </div>
+                  <h4 className="text-sm font-semibold uppercase tracking-wider text-black font-display">
+                    1. Canvas OS
+                  </h4>
+                  <p className="text-xs text-neutral-500 font-light">
+                    Direct parametric viewport for high precision layout manipulation.
                   </p>
+                </div>
+                <div className="flex flex-wrap gap-1 pt-2">
+                  {['Layers', 'Objects', 'Vectors', 'Images', 'Layout'].map((tag) => (
+                    <span key={tag} className="px-2 py-0.5 bg-neutral-50 border border-black/10 font-mono text-[9px] uppercase text-neutral-600 rounded-[2px]">
+                      {tag}
+                    </span>
+                  ))}
                 </div>
               </div>
 
-              {/* Step 2 */}
-              <div className="flex gap-6 items-start pb-6 border-b border-black/5">
-                <div className="p-2 border border-black rounded-[2px] text-xs font-mono font-bold shrink-0 bg-neutral-50">
-                  STEP 02
-                </div>
-                <div className="space-y-1">
-                  <h4 className="text-sm font-semibold uppercase tracking-wider text-black">Interactive Layer Decomposition</h4>
-                  <p className="text-xs text-neutral-500 font-light leading-relaxed">
-                    Create independent nodes for typography parameters, dimension locks, force-aligned guidelines, and outline layers inside the visible workspace.
+              {/* Card 2: Object Graph */}
+              <div className="p-5 border border-black/15 bg-white rounded-[2px] flex flex-col justify-between space-y-4">
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="font-mono text-[10px] font-bold text-neutral-400">STAGE 02</span>
+                    <span className="w-1.5 h-1.5 bg-black rounded-full" />
+                  </div>
+                  <h4 className="text-sm font-semibold uppercase tracking-wider text-black font-display">
+                    2. Object Graph
+                  </h4>
+                  <p className="text-xs text-neutral-500 font-light">
+                    Transforming active visual constructs directly into queryable, clean relational tree data.
                   </p>
+                </div>
+                <div className="flex flex-wrap gap-1 pt-2">
+                  {['Structured Data', 'Anchor Links', 'Geometry AST'].map((tag) => (
+                    <span key={tag} className="px-2 py-0.5 bg-neutral-50 border border-black/10 font-mono text-[9px] uppercase text-neutral-600 rounded-[2px]">
+                      {tag}
+                    </span>
+                  ))}
                 </div>
               </div>
 
-              {/* Step 3 */}
-              <div className="flex gap-6 items-start">
-                <div className="p-2 border border-black rounded-[2px] text-xs font-mono font-bold shrink-0 bg-neutral-50">
-                  STEP 03
-                </div>
-                <div className="space-y-1">
-                  <h4 className="text-sm font-semibold uppercase tracking-wider text-black">Universal CAD Export Package</h4>
-                  <p className="text-xs text-neutral-500 font-light leading-relaxed">
-                    Compile final, scale-locked vector designs, parts checklists, specification manifests, and materials bills inside a structured digital folder.
+              {/* Card 3: ForgeMind Engineering Brain */}
+              <div className="p-5 border border-black/15 bg-white rounded-[2px] flex flex-col justify-between space-y-4 md:col-span-2">
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="font-mono text-[10px] font-bold text-neutral-400">STAGE 03 / ENGINE MAINSPRING</span>
+                    <span className="w-1.5 h-1.5 bg-black rounded-full animate-ping" />
+                  </div>
+                  <h4 className="text-sm font-semibold uppercase tracking-wider text-black font-display">
+                    3. ForgeMind Engineering Brain
+                  </h4>
+                  <p className="text-xs text-neutral-500 font-light">
+                    The rule-evaluation, tolerance compilation and material synthesis processor checking rules before print lock.
                   </p>
+                </div>
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-1 pt-2">
+                  {['Requirements', 'Constraints', 'DFM', 'BOM', 'Digital Twin', 'Failure Modes'].map((tag) => (
+                    <span key={tag} className="px-2 py-0.5 bg-black text-white font-mono text-[9px] uppercase text-center rounded-[2px] truncate" title={tag}>
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              {/* Card 4: CAD Bridge */}
+              <div className="p-5 border border-black/15 bg-white rounded-[2px] flex flex-col justify-between space-y-4">
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="font-mono text-[10px] font-bold text-neutral-400">STAGE 04</span>
+                    <span className="w-1.5 h-1.5 bg-black rounded-full" />
+                  </div>
+                  <h4 className="text-sm font-semibold uppercase tracking-wider text-black font-display">
+                    4. CAD Bridge
+                  </h4>
+                  <p className="text-xs text-neutral-500 font-light">
+                    Inter-operational standard translators ensuring seamless CAD software handoff.
+                  </p>
+                </div>
+                <div className="flex flex-wrap gap-1 pt-2">
+                  {['DXF', 'STEP Target', '3MF', 'STL', 'Dimensions'].map((tag) => (
+                    <span key={tag} className="px-2 py-0.5 bg-neutral-50 border border-black/10 font-mono text-[9px] uppercase text-neutral-600 rounded-[2px]">
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              {/* Card 5: Prototype Package */}
+              <div className="p-5 border border-black/15 bg-white rounded-[2px] flex flex-col justify-between space-y-4">
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="font-mono text-[10px] font-bold text-neutral-400">STAGE 05</span>
+                    <span className="w-1.5 h-1.5 bg-black rounded-full" />
+                  </div>
+                  <h4 className="text-sm font-semibold uppercase tracking-wider text-black font-display">
+                    5. Prototype Package
+                  </h4>
+                  <p className="text-xs text-neutral-500 font-light">
+                    Rapid material verification files for immediate physical evaluation.
+                  </p>
+                </div>
+                <div className="flex flex-wrap gap-1 pt-2">
+                  {['CNC G-Code', '3D Print', 'Wood Mockup', 'Factory RFQ'].map((tag) => (
+                    <span key={tag} className="px-2 py-0.5 bg-neutral-50 border border-black/10 font-mono text-[9px] uppercase text-neutral-600 rounded-[2px]">
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              {/* Card 6: Manufacturing Handoff */}
+              <div className="p-5 border border-black/15 bg-white rounded-[2px] flex flex-col justify-between space-y-4 md:col-span-2">
+                <div className="space-y-2 flex justify-between gap-4 items-start">
+                  <div>
+                    <span className="font-mono text-[10px] font-bold text-neutral-400">STAGE 06</span>
+                    <h4 className="text-sm font-semibold uppercase tracking-wider text-black font-display mt-1">
+                      6. Manufacturing Handoff
+                    </h4>
+                    <p className="text-xs text-neutral-500 font-light mt-1">
+                      Final, structured output containing precise manufacturing instructions, cost calculation, and assembly manuals.
+                    </p>
+                  </div>
+                  <div className="bg-neutral-50 border border-black/10 p-2 font-mono text-[10px] text-black rounded-[2px] shrink-0 font-bold">
+                    [ PRODUCTION LOCKED ]
+                  </div>
+                </div>
+                <div className="flex flex-wrap gap-1 pt-2">
+                  {['BOM Matrix', 'DFM Audit Report', 'Assembly Layouts', 'Inspection Rules', 'Direct Quote API'].map((tag) => (
+                    <span key={tag} className="px-2 py-1 bg-neutral-900 text-white font-mono text-[8.5px] uppercase tracking-wider rounded-[2px]">
+                      {tag}
+                    </span>
+                  ))}
                 </div>
               </div>
 

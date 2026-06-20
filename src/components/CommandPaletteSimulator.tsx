@@ -16,6 +16,8 @@ import {
   Files, 
   Layers, 
   Plus, 
+  ZoomIn,
+  ZoomOut, 
   Search, 
   Trash2, 
   Settings, 
@@ -56,6 +58,7 @@ import EngineeringDFMAndBOMEngine from './EngineeringDFMAndBOMEngine';
 import ExportManager from './ExportManager';
 import QualityControlPanel from './QualityControlPanel';
 import WorkspaceManager from './WorkspaceManager';
+import ForgeMindJarvisEngine from './ForgeMindJarvisEngine';
 
 import {
   createLayout,
@@ -707,7 +710,7 @@ export default function CommandPaletteSimulator() {
 
   const [undoStack, setUndoStack] = useState<VisualProjectGraph[]>([]);
   const [redoStack, setRedoStack] = useState<VisualProjectGraph[]>([]);
-  const [graphSidebarTab, setGraphSidebarTab] = useState<'layers' | 'graph' | 'layout' | 'raster' | 'brand' | 'uiux' | 'product' | 'industrial' | 'architecture' | 'engineering' | 'export_manager' | 'quality_verifier' | 'workspace_manager'>('uiux');
+  const [graphSidebarTab, setGraphSidebarTab] = useState<'layers' | 'graph' | 'layout' | 'raster' | 'brand' | 'uiux' | 'product' | 'industrial' | 'architecture' | 'engineering' | 'export_manager' | 'quality_verifier' | 'workspace_manager' | 'forgemind_jarvis'>('forgemind_jarvis');
   const [newObjectType, setNewObjectType] = useState<'vector' | 'raster' | 'text' | 'dimension' | 'material'>('vector');
   const [newObjectName, setNewObjectName] = useState('');
 
@@ -771,6 +774,7 @@ export default function CommandPaletteSimulator() {
   ]);
 
   const [activeBrandKitId, setActiveBrandKitId] = useState<string>('bk_1');
+  const [zoomLevel, setZoomLevel] = useState<number>(100);
   const [brandLockPalette, setBrandLockPalette] = useState<boolean>(true);
   const [brandGuideText, setBrandGuideText] = useState<string>('VisualOS Pro Guide:\nPrimary color is Indigo Blue #2563eb.\nSecondary color is Rose Pink #db2777.\nBackground is soft light #fafafa.\nAlways use Space Grotesk font for brand headings.\nMin spacing margin limits must exceed 0.25in.\nLogo rule: always maintain locked aspect ratio of 1:1.');
   const [brandComplianceReport, setBrandComplianceReport] = useState<{
@@ -2663,7 +2667,8 @@ ${svgElements}</svg>`;
   const handleMouseMove = (e: React.MouseEvent) => {
     if (!draggedLayerId) return;
 
-    const workspaceElement = canvasWorkspaceRef.current;
+    const activeLayerElement = document.getElementById(`canvas-layer-node-${draggedLayerId}`);
+    const workspaceElement = activeLayerElement ? (activeLayerElement.parentNode as HTMLElement) : canvasWorkspaceRef.current;
     if (!workspaceElement) return;
 
     const bounds = workspaceElement.getBoundingClientRect();
@@ -2926,6 +2931,50 @@ ${svgElements}</svg>`;
                 <span className="text-emerald-400 font-bold">300 DPI [SWOP]</span>
               </div>
 
+              {/* Elegant floating zoom control interface */}
+              <div 
+                className="absolute top-3 right-4 z-20 bg-gray-900/90 text-white rounded-xl font-mono text-[10px] flex items-center gap-1.5 p-1 px-2 backdrop-blur shadow-lg border border-gray-800 select-none animate-fadeIn" 
+                id="viewport-zoom-widget"
+              >
+                <button
+                  type="button"
+                  onClick={() => setZoomLevel(prev => Math.max(25, prev - 25))}
+                  className="p-1 px-1.5 hover:bg-gray-800 rounded text-gray-300 hover:text-white transition-colors flex items-center justify-center font-bold"
+                  id="zoom-btn-out"
+                  title="Zoom Out"
+                >
+                  <ZoomOut className="h-3 w-3 mr-1" />
+                  <span>-</span>
+                </button>
+                
+                <span className="px-1 text-center min-w-[34px] font-bold text-gray-200" id="zoom-value-label">
+                  {zoomLevel}%
+                </span>
+                
+                <button
+                  type="button"
+                  onClick={() => setZoomLevel(prev => Math.min(300, prev + 25))}
+                  className="p-1 px-1.5 hover:bg-gray-800 rounded text-gray-300 hover:text-white transition-colors flex items-center justify-center font-bold"
+                  id="zoom-btn-in"
+                  title="Zoom In"
+                >
+                  <ZoomIn className="h-3 w-3 mr-1" />
+                  <span>+</span>
+                </button>
+
+                <div className="w-px h-3 bg-gray-800 mx-1" />
+
+                <button
+                  type="button"
+                  onClick={() => setZoomLevel(100)}
+                  className="p-1 px-1.5 hover:bg-gray-800 rounded text-[9px] uppercase font-bold text-blue-400 hover:text-blue-300 transition-colors"
+                  id="zoom-btn-reset"
+                  title="Reset Zoom to 100%"
+                >
+                  Reset
+                </button>
+              </div>
+
               {/* Main SVG/Drawing representation workspace */}
               <div 
                 id="interactive-drawing-board"
@@ -2936,7 +2985,7 @@ ${svgElements}</svg>`;
                 onMouseDown={(e) => {
                   if (isBrushMode) {
                     setIsDrawing(true);
-                    const el = canvasWorkspaceRef.current;
+                    const el = document.getElementById('vector-canvas-viewport') || canvasWorkspaceRef.current;
                     if (!el) return;
                     const bounds = el.getBoundingClientRect();
                     const xPct = ((e.clientX - bounds.left) / bounds.width) * 100;
@@ -2951,7 +3000,7 @@ ${svgElements}</svg>`;
                 onMouseMove={(e) => {
                   if (isBrushMode) {
                     if (!isDrawing) return;
-                    const el = canvasWorkspaceRef.current;
+                    const el = document.getElementById('vector-canvas-viewport') || canvasWorkspaceRef.current;
                     if (!el) return;
                     const bounds = el.getBoundingClientRect();
                     const xPct = ((e.clientX - bounds.left) / bounds.width) * 100;
@@ -2968,7 +3017,7 @@ ${svgElements}</svg>`;
                     handleMouseMove(e);
                     
                     if (graphSidebarTab === 'layout' && draggedBlockId) {
-                      const el = canvasWorkspaceRef.current;
+                      const el = document.getElementById('layout-artboard-preview') || canvasWorkspaceRef.current;
                       if (!el) return;
                       const bounds = el.getBoundingClientRect();
                       const xPx = e.clientX - bounds.left;
@@ -3024,13 +3073,17 @@ ${svgElements}</svg>`;
                   /* ========================================================
                      QUARK ARTBOARD PREVIEW WITH MARGINS, BLEED, COLUMNS & CROP LINES
                      ======================================================== */
-                  <div
+                   <div
+                    id="layout-artboard-preview"
                     className="relative bg-white border border-slate-300 shadow-2xl transition-all flex items-center justify-center overflow-hidden"
                     style={{
                       width: '100%',
                       maxWidth: '100%',
                       height: '100%',
                       aspectRatio: (activeLayout.width / activeLayout.height),
+                      transform: `scale(${zoomLevel / 100})`,
+                      transformOrigin: 'center center',
+                      transition: 'transform 0.15s cubic-bezier(0.16, 1, 0.3, 1)',
                     }}
                   >
                     {/* Trim Marks (Printed Crucial Crosshairs at 4 endpoints) */}
@@ -3189,14 +3242,18 @@ ${svgElements}</svg>`;
                   /* ========================================================
                      DEFAULT VECTOR MATRIX DRAWING VIEWPORT
                      ======================================================== */
-                  <div 
+                   <div 
+                    id="vector-canvas-viewport"
                     className="shadow-2xl border-2 border-slate-800 relative transition-colors duration-200 flex items-center justify-center overflow-hidden"
                     style={{
                       width: '100%',
                       maxWidth: '100%',
                       height: '100%',
                       backgroundColor: activeCanvas.background,
-                      aspectRatio: activeCanvas.aspect_ratio === 'custom' ? undefined : activeCanvas.aspect_ratio.replace(':', '/')
+                      aspectRatio: activeCanvas.aspect_ratio === 'custom' ? undefined : activeCanvas.aspect_ratio.replace(':', '/'),
+                      transform: `scale(${zoomLevel / 100})`,
+                      transformOrigin: 'center center',
+                      transition: 'transform 0.15s cubic-bezier(0.16, 1, 0.3, 1)',
                     }}
                   >
                     
@@ -3631,7 +3688,20 @@ ${svgElements}</svg>`;
           <div className="lg:col-span-4 space-y-6">
             
             {/* High-End Tab System */}
-            <div className="border border-gray-255 bg-gray-50 p-1 rounded-2xl flex items-center justify-between gap-1 shadow-sm">
+            <div className="border border-gray-255 bg-gray-50 p-1 rounded-2xl flex items-center justify-between gap-1 shadow-sm overflow-x-auto min-w-0">
+              <button
+                type="button"
+                onClick={() => setGraphSidebarTab('forgemind_jarvis')}
+                className={`flex-1 py-1.5 px-3 text-[11px] font-bold rounded-xl transition whitespace-nowrap text-center flex items-center justify-center gap-1 ${
+                  graphSidebarTab === 'forgemind_jarvis'
+                    ? 'bg-indigo-600 text-white shadow-xs'
+                    : 'text-gray-500 hover:text-indigo-600'
+                }`}
+              >
+                <Sparkles className="h-3.5 w-3.5 text-indigo-400 animate-pulse" />
+                <span>ForgeMind Jarvis</span>
+              </button>
+
               <button
                 type="button"
                 onClick={() => setGraphSidebarTab('layers')}
@@ -3807,7 +3877,38 @@ ${svgElements}</svg>`;
               </button>
             </div>
 
-            {graphSidebarTab === 'layers' ? (
+            {graphSidebarTab === 'forgemind_jarvis' ? (
+              <ForgeMindJarvisEngine 
+                activeBrandKit={brandKits.find(b => b.id === activeBrandKitId)} 
+                logTrace={logTrace}
+                onUpdateCanvasBackground={(url) => {
+                  setActiveCanvas(prev => ({
+                    ...prev,
+                    background_image: url
+                  }));
+                }}
+                onAddRasterLayer={(name, source) => {
+                  const newLayer = {
+                    id: `lay_gen_${Date.now()}`,
+                    name: name,
+                    type: 'raster' as const,
+                    visible: true,
+                    locked: false,
+                    x: 100,
+                    y: 100,
+                    width: 400,
+                    height: 400,
+                    color: 'bg-transparent',
+                    opacity: 100,
+                    content: source
+                  };
+                  setActiveCanvas(prev => ({
+                    ...prev,
+                    layers: [...prev.layers, newLayer]
+                  }));
+                }}
+              />
+            ) : graphSidebarTab === 'layers' ? (
               <>
                 {/* Advanced CAD Layer Manager Dashboard */}
                 <div className="bg-gray-50 border border-gray-250 rounded-3xl p-5 shadow-sm space-y-4">
