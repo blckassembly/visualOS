@@ -41,8 +41,9 @@ export default function ForgeMindJarvisEngine({
 }: ForgeMindJarvisEngineProps) {
   
   // ----------------------------------------------------
-  // Canonical Frezit Case Study State
+  // Canonical Case Study States
   // ----------------------------------------------------
+  const [caseStudy, setCaseStudy] = useState<"frezit" | "tesla">("tesla");
   const [frezitStage, setFrezitStage] = useState<number>(3); // Default to Stage 3 - Takeoff
   const [frezitLoading, setFrezitLoading] = useState<boolean>(false);
   const [uploadedImageUrl, setUploadedImageUrl] = useState<string | null>(null);
@@ -89,15 +90,29 @@ export default function ForgeMindJarvisEngine({
   // Core Action Handlers
   // ----------------------------------------------------
   
-  // Trigger different stages of the Frezit Product Pipeline
-  const handleSelectFrezitStage = (stageNum: number) => {
+  // Trigger different stages of the active Case Study pipeline
+  const handleSelectStage = (stageNum: number) => {
     setFrezitLoading(true);
-    triggerTrace(`Switching Frezit Case Study pipeline view to Stage ${stageNum}...`);
+    const studyName = caseStudy === "frezit" ? "Frezit Caddy" : "Tesla Cyber-Skateboard";
+    triggerTrace(`Switching ${studyName} pipeline view to Stage ${stageNum}...`);
     setTimeout(() => {
       setFrezitStage(stageNum);
       setFrezitLoading(false);
-      triggerTrace(`Loaded Stage ${stageNum} data parameters for canonical Smart Frezing Waste Appliance.`);
+      triggerTrace(`Loaded Stage ${stageNum} parameters for ${studyName}.`);
     }, 450);
+  };
+
+  const handleSwitchCaseStudy = (newCase: "frezit" | "tesla") => {
+    setFrezitLoading(true);
+    triggerTrace(`Template transition requested: Switching active workspace focus to ${newCase === "frezit" ? "Frezit Smart Caddy" : "Tesla Cyber-Skateboard"}.`);
+    setTimeout(() => {
+      setCaseStudy(newCase);
+      setFrezitStage(3); // default back to takeoff stage
+      setUploadedImageUrl(null);
+      setVisionAnalysisResult(null);
+      setFrezitLoading(false);
+      triggerTrace(`Workspace layout initialized with ${newCase === "frezit" ? "Frezit" : "Tesla"} system parameters.`);
+    }, 300);
   };
 
   // Run Real / Fallback Gemini Thinking query
@@ -136,7 +151,9 @@ export default function ForgeMindJarvisEngine({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           prompt: userMsg,
-          systemInstruction: "You are the ForgeMind Engineering Brain. Solve mechanical, material, and thermal issues for products like Frezit (a smart freezing trash can) with deep technical and mathematical rigour."
+          systemInstruction: caseStudy === "slate" || caseStudy === "tesla"
+            ? "You are the ForgeMind Engineering Brain. Solve mechanical, electrical, structural, and safety issues for a vehicle like the Tesla Cyber-Skateboard (EV with G-Wagon presence and Cybertruck width) with deep technical and mathematical rigour."
+            : "You are the ForgeMind Engineering Brain. Solve mechanical, material, and thermal issues for products like Frezit (a smart freezing trash can) with deep technical and mathematical rigour."
         })
       });
 
@@ -162,12 +179,24 @@ export default function ForgeMindJarvisEngine({
       setTimeout(() => {
         // High quality fallback based on predefined queries or general engineering
         let fallbackText = "";
-        if (userMsg.toLowerCase().includes("power") || userMsg.toLowerCase().includes("compressor")) {
-          fallbackText = `### **Engineering Analysis: Thermal Cooling & Power Load Calculation**\n\n**1. Thermal Load Math**:\nTo cool a **15 Liter inner organic storage bin** from 25°C to -5°C within **45 minutes**:\n- **Thermal Mass of waste (estimate wet water weight)**: $M = 5\\text{ kg}$\n- **Specific Heat Capacity of high-moisture organic mass**: $C_p \\approx 3.8 \\text{ kJ}/(\\text{kg}\\cdot\\text{K})$\n- $\\Delta T = 30\\text{ K}$ (from 25°C down to -5°C)\n- **Calculated Required Heat Energy (Q)**:\n  $$Q = m \\cdot C_p \\cdot \\Delta T = 5 \\cdot 3.8 \\cdot 30 = 570 \\text{ kJ}$$\n- **Minimum Core Cooling Power**:\n  $$P_{\\text{cooling}} = \\frac{Q}{t} = \\frac{570,000 \\text{ Joules}}{2700 \\text{ seconds}} \\approx 211.1 \\text{ Watts}$$\n\n**2. System DFM Recommendation**:\n- **Insulation**: Utilize **25mm of polyurethane foam with integrated Vacuum Insulation Panels (VIPs)**, reducing heat leakage to $< 8\\text{W}$.\n- **Compressor Choice**: Pick a **60W DC miniature rotary compressor** with a COP of 1.4, providing $211\\text{W}$ instantaneous peak extraction or maintaining temperature on an eco-cycle averaging **12W continuous draw**, feasible for 12V backup battery integrations.`;
-        } else if (userMsg.toLowerCase().includes("insulation") || userMsg.toLowerCase().includes("material")) {
-          fallbackText = `### **Material Optimization Dossier: Organic Bin & Insulation Shell**\n\n**1. Insulation Constraints**:\n- **Primary outer shell**: Molded ABS with UV stabilizer inhibitors to resist indoor/outdoor yellowing.\n- **Insulation barrier**: **VIPs (Vacuum Insulation Panels)** with core fumed silica. Thermal conductivity is extremely low ($k = 0.004 \\text{ W/m}\\cdot\\text{K}$).\n\n**2. Inner Organic Bin Selection**:\n- **Material**: **Stainless Steel Grade 304**. Avoids smell uptake (unlike porous polypropylene/ABS resins), handles continuous -10°C thermal stress without micro-fracturing, and can be easily sanitized with hot water.\n- **Sealing Gasket**: Molded twin-lip **Silicone rubbers**. Retains elasticity at sub-zero temperatures and provides continuous airtight enclosure to lock in humidity and smells.`;
+        
+        if (caseStudy === "tesla") {
+          if (userMsg.toLowerCase().includes("clearance") || userMsg.toLowerCase().includes("steer") || userMsg.toLowerCase().includes("linkage")) {
+            fallbackText = `### **Tesla Engineering Analysis: Steer-by-Wire Linkage & Packaging Envelopes**\n\n**1. Packaging Constraint Math**:\n- **Axle Width**: Cybertruck spacing width of **2030mm** allows for an ultra-wide double-wishbone front suspension cage.\n- **Steering Rack Space**: Deleting the physical cabin column shaft frees up **150mm** of dash firewall depth, letting us push the front firewall forward for a short **2950mm** wheelbase.\n- **Maximum Steering Rack Sweep angle**: at full tire deflection ($\\theta = 38^{\\circ}$), minimum distance between tie-rod linkages and the active crumple structural frame columns is:\n  $$d_{\\text{clearance}} = D_{\\text{nominal}} - L_{\\text{sweep}} \\cdot \\sin(\\theta) = 115\\text{mm} - 70\\text{mm} \\approx 45\\text{mm}$$\n  *Verdict: COMPLIANT*. Clearance exceeds the 30mm safety spacing threshold.\n\n**2. DFM / Redundant Systems Layout**:\n- **Dual Actuators**: Integrate a twin-motor design on the front gear axle to ensure 100% control redundancy.\n- **Power Lines**: Steer-by-wire system MUST tie directly into both the primary structural accumulator pack and the front 48V auxiliary drip loop.`;
+          } else if (userMsg.toLowerCase().includes("battery") || userMsg.toLowerCase().includes("thermal") || userMsg.toLowerCase().includes("heat") || userMsg.toLowerCase().includes("dispersion")) {
+            fallbackText = `### **Tesla Thermal Analysis: 4680 Honeycomb Battery Pack Fluid Heat Dispersion**\n\n**1. Thermal Dispersal Formulation**:\n- **Pack Capacity**: **120kWh** cell mass mapping a honeycomb structural plate.\n- **Heat dissipation requirements**: Peak fast-charging thermal surge at 350kW represents $P_{\\text{heat}} \\approx 14.2\\text{kW}$ waste output needing rapid cooling.\n- **Fluid Velocity Requirement**:\n  $$Q = A \\cdot V \\quad \\Rightarrow \\quad P_{\\text{heat}} = \\dot{m} \\cdot C_p \\cdot \\Delta T$$\n  Using a water-glycol coolant with $C_p = 3.65 \\text{ kJ}/(\\text{kg}\\cdot\\text{K})$ and a target temperature differential $\\Delta T = 6^{\\circ}\\text{C}$:\n  $$\\dot{m} = \\frac{14.2 \\text{ kW}}{3.65 \\cdot 6} \\approx 0.65 \\text{ kg/sec} \\approx 39 \\text{ L/min}$$\n\n**2. Housing Integration Guideline**:\n- **Honeycomb Guttering**: Run parallel serpentining ribbon cooling tubes directly between cells, bonded with high-conductivity epoxy ($k > 1.2 \\text{W/mK}$).\n- **Floor Plate Shielding**: 1.5mm thick continuous titanium protective sheets seal the lower face plate to handle high-speed road debris hazard safety.`;
+          } else {
+            fallbackText = `### **VisualOS Tesla Product Skeleton Analysis**\n\n**1. Skeleton Hardpoints Summary**:\n- **Vehicle Width**: 2030mm Cybertruck category tracks.\n- **Aesthetic Frame**: High-presence vertical G-Wagon tall cabin structure.\n- **Rear Bulkhead**: 100% solid pre-stressed steel panel (zero rear window glass) offering $+45\\%$ torsional rigidity increase.\n\n**2. Manufacturing Order & Assembly Handoff**:\n- **Digital Twin Check**: Clear paths for service access (BMS modules slide out from two bottom maintenance hatches).\n- All 10 engineering systems fully mapped and ready to bridge into raw CAD files.`;
+          }
         } else {
-          fallbackText = `### **ForgeMind CAD Engine Analysis Report**\n\n**1. Evaluation Summary**:\n- Evaluated input design criteria under ASME Y14.5 mechanical tolerance frameworks.\n- Material thermal conduction coefficients verified for double-wall metal casing parameters.\n- Compliant DFM assembly steps locked: 4 separate custom fasteners required on service hatches.\n\n**2. CAD Export Recommendations**:\n- Recommended **2.4mm minimum draft angle** on outer molded ABS parts to prevent factory release blemishes.\n- Export format .STEP is locked with correct spatial projection parameters in CAD Bridge.\n\n_Note: Real-time reasoning completed successfully._`;
+          // Frezit fallbacks
+          if (userMsg.toLowerCase().includes("power") || userMsg.toLowerCase().includes("compressor")) {
+            fallbackText = `### **Engineering Analysis: Thermal Cooling & Power Load Calculation**\n\n**1. Thermal Load Math**:\nTo cool a **15 Liter inner organic storage bin** from 25°C to -5°C within **45 minutes**:\n- **Thermal Mass of waste (estimate wet water weight)**: $M = 5\\text{ kg}$\n- **Specific Heat Capacity of high-moisture organic mass**: $C_p \\approx 3.8 \\text{ kJ}/(\\text{kg}\\cdot\\text{K})$\n- $\\Delta T = 30\\text{ K}$ (from 25°C down to -5°C)\n- **Calculated Required Heat Energy (Q)**:\n  $$Q = m \\cdot C_p \\cdot \\Delta T = 5 \\cdot 3.8 \\cdot 30 = 570 \\text{ kJ}$$\n- **Minimum Core Cooling Power**:\n  $$P_{\\text{cooling}} = \\frac{Q}{t} = \\frac{570,000 \\text{ Joules}}{2700 \\text{ seconds}} \\approx 211.1 \\text{ Watts}$$\n\n**2. System DFM Recommendation**:\n- **Insulation**: Utilize **25mm of polyurethane foam with integrated Vacuum Insulation Panels (VIPs)**, reducing heat leakage to $< 8\\text{W}$.\n- **Compressor Choice**: Pick a **60W DC miniature rotary compressor** with a COP of 1.4, providing $211\\text{W}$ instantaneous peak extraction or maintaining temperature on an eco-cycle averaging **12W continuous draw**, feasible for 12V backup battery integrations.`;
+          } else if (userMsg.toLowerCase().includes("insulation") || userMsg.toLowerCase().includes("material")) {
+            fallbackText = `### **Material Optimization Dossier: Organic Bin & Insulation Shell**\n\n**1. Insulation Constraints**:\n- **Primary outer shell**: Molded ABS with UV stabilizer inhibitors to resist indoor/outdoor yellowing.\n- **Insulation barrier**: **VIPs (Vacuum Insulation Panels)** with core fumed silica. Thermal conductivity is extremely low ($k = 0.004 \\text{ W/m}\\cdot\\text{K}$).\n\n**2. Inner Organic Bin Selection**:\n- **Material**: **Stainless Steel Grade 304**. Avoids smell uptake (unlike porous polypropylene/ABS resins), handles continuous -10°C thermal stress without micro-fracturing, and can be easily sanitized with hot water.\n- **Sealing Gasket**: Molded twin-lip **Silicone rubbers**. Retains elasticity at sub-zero temperatures and provides continuous airtight enclosure to lock in humidity and smells.`;
+          } else {
+            fallbackText = `### **ForgeMind CAD Engine Analysis Report**\n\n**1. Evaluation Summary**:\n- Evaluated input design criteria under ASME Y14.5 mechanical tolerance frameworks.\n- Material thermal conduction coefficients verified for double-wall metal casing parameters.\n- Compliant DFM assembly steps locked: 4 separate custom fasteners required on service hatches.\n\n**2. CAD Export Recommendations**:\n- Recommended **2.4mm minimum draft angle** on outer molded ABS parts to prevent factory release blemishes.\n- Export format .STEP is locked with correct spatial projection parameters in CAD Bridge.\n\n_Note: Real-time reasoning completed successfully._`;
+          }
         }
 
         setChatMessages(prev => [
@@ -218,21 +247,39 @@ export default function ForgeMindJarvisEngine({
       } catch (err: any) {
         // High fidelity fallback parsing of napkin sketches
         setTimeout(() => {
-          setVisionAnalysisResult({
-            name: "Frezit Alpha Blueprint Sketch",
-            description: "Napkin doodle representing the freezing canister and compressor base assembly.",
-            materialsList: ["Molded wood-composite fibers", "Polystyrene liner", "Airtight silicone seal"],
-            components: [
-              { name: "Frozen Chamber", function: "12L insulated bucket to store organic waste" },
-              { name: "Peltier thermoelectric junction", function: "Solid-state prototype cooling array" },
-              { name: "Exhaust Radial Fan", function: "Vents active warm sink out from under caddy" }
-            ],
-            manufacturingAdvices: [
-              "Transition thermoelectric cooling to rotary compressor for proper sub-zero efficiency.",
-              "Outer wood housing requires waterproofing sealant to resist biological spillover."
-            ],
-            formStyle: "Brutalist Rectilinear Retro Casing"
-          });
+          if (caseStudy === "tesla") {
+            setVisionAnalysisResult({
+              name: "Tesla x G-Wagon Cyber-Skateboard Concept",
+              description: "Initial napkin sketch detailing EV skateboard structure overlaid with high-presence rugged steel body panels.",
+              materialsList: ["High-Frequency Cold-Rolled Steel", "Pre-stressed Boron roll bars", "Structural lithium honeycomb"],
+              components: [
+                { name: "Shorter-wheelbase Skateboard Chassis", "function": "Rigid low-CG battery envelope with dual active wrinkling structures" },
+                { name: "Integrated Rollover Cage", "function": "Eliminates physical partition obstructions while giving high structural headroom" },
+                { name: "Zero-rear-window outer armor paneling", "function": "Secure steel bulkheads with pre-fitted camera aperture brackets" }
+              ],
+              manufacturingAdvices: [
+                "Deleting rear glass window necessitates default high-definition digital live feed.",
+                "Verify front firewall clearances to ensure steer-by-wire packaging envelopes are maintained."
+              ],
+              formStyle: "Polygonal Tactical Rigid Shell"
+            });
+          } else {
+            setVisionAnalysisResult({
+              name: "Frezit Alpha Blueprint Sketch",
+              description: "Napkin doodle representing the freezing canister and compressor base assembly.",
+              materialsList: ["Molded wood-composite fibers", "Polystyrene liner", "Airtight silicone seal"],
+              components: [
+                { name: "Frozen Chamber", function: "12L insulated bucket to store organic waste" },
+                { name: "Peltier thermoelectric junction", function: "Solid-state prototype cooling array" },
+                { name: "Exhaust Radial Fan", function: "Vents active warm sink out from under caddy" }
+              ],
+              manufacturingAdvices: [
+                "Transition thermoelectric cooling to rotary compressor for proper sub-zero efficiency.",
+                "Outer wood housing requires waterproofing sealant to resist biological spillover."
+              ],
+              formStyle: "Brutalist Rectilinear Retro Casing"
+            });
+          }
           triggerTrace("Completed offline visual understanding parse. Concept parameters added to pipeline.");
         }, 1500);
       } finally {
@@ -282,11 +329,11 @@ export default function ForgeMindJarvisEngine({
       // Fallback high quality renders from Unsplash matching keyword parameters
       setTimeout(() => {
         let fallbackUrl = "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=800&q=80"; // industrial render
-        if (imagePrompt.toLowerCase().includes("trash") || imagePrompt.toLowerCase().includes("can") || imagePrompt.toLowerCase().includes("freeze")) {
-          fallbackUrl = "https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?auto=format&fit=crop&w=800&q=80"; // modern steel container
-        } else if (imagePrompt.toLowerCase().includes("vehicle") || imagePrompt.toLowerCase().includes("car") || imagePrompt.toLowerCase().includes("panel")) {
+        if (caseStudy === "tesla") {
           fallbackUrl = "https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=800&q=80"; // sleek grey shell
-        } else if (imagePrompt.toLowerCase().includes("wood") || imagePrompt.toLowerCase().includes("box")) {
+        } else if (imagePrompt.toLowerCase().includes("trash") || imagePrompt.toLowerCase().includes("can") || imagePrompt.toLowerCase().includes("freeze")) {
+          fallbackUrl = "https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?auto=format&fit=crop&w=800&q=80"; // modern steel container
+        } else {
           fallbackUrl = "https://images.unsplash.com/photo-1541123437800-1bb1317badc2?auto=format&fit=crop&w=800&q=80"; // wood prototype
         }
         
@@ -310,26 +357,46 @@ export default function ForgeMindJarvisEngine({
   const loadNapkinPreset = (presetUrl: string) => {
     setUploadedImageUrl(presetUrl);
     setAnalyzingImage(true);
-    triggerTrace("Loading pre-baked Napkin Sketch mockup. Parsing pixel constraints with vision core...");
+    triggerTrace(`Loading pre-baked ${caseStudy === "tesla" ? "G-Wagon x Cybertruck EV hybrid" : "Pine Caddy"} Napkin Sketch mockup. Parsing pixel constraints...`);
 
     setTimeout(() => {
-      setVisionAnalysisResult({
-        name: "Frezit Wood Mockup Sketch",
-        description: "Initial hand-drawn perspective outlines of experimental insulated pine caddy.",
-        materialsList: ["Redwood Pine planks", "Neoprene compression straps", "Expanded Polystyrene dry-ice caddy"],
-        components: [
-          { name: "Plywood outer block", function: "Physical structural support cage mimicking final caddy" },
-          { name: "Thermal insulation core", function: "Maintains below freezing interior temperatures" },
-          { name: "Acoustic rubber feet", function: "Absorbs vibration transmission to floor plates" }
-        ],
-        manufacturingAdvices: [
-          "Outer wall pine cannot resist regular biological liquids. Needs internal sanitary liner.",
-          "Consider CNC router-carving on standard Baltic Birch to improve rapid assembly tolerances."
-        ],
-        formStyle: "Crafted Flatpack Wood Furniture"
-      });
-      setAnalyzingImage(false);
-      triggerTrace("Visual understanding parse complete. Added wood-concept parameters directly into active Frezit CAD pipeline.");
+      if (caseStudy === "tesla") {
+        setVisionAnalysisResult({
+          name: "Tesla Cyber-Skateboard CEO Napkin Sketch",
+          description: "CEO's whiteboard outlines proposing G-Wagon silhouette over a short Cybertruck EV skateboard base.",
+          materialsList: ["HFS 3.0 Ultra-Hard Outer Alloy", "Honeycomb internal crash webs", "Silicon single-crystal solar cells"],
+          components: [
+            { name: "Shorter-wheelbase EV Skateboard frame", function: "4680 cell integration zone with continuous structural bottom plates" },
+            { name: "Front/Rear crash zone hardpoints", function: "Deceleration columns optimized for steer-by-wire control arm safety clearance" },
+            { name: "Omitted rear glass structural header", function: "Solid high-strength steel bulkhead replacing standard rear glass" }
+          ],
+          manufacturingAdvices: [
+            "Full steel rear bulkhead avoids glass tooling complications while increasing occupant survival cabin integrity.",
+            "Maintain 2100mm maximum outer width to keep standard assembly line compatibility."
+          ],
+          formStyle: "Tactical Box-Skateboard Silhouette"
+        });
+        setAnalyzingImage(false);
+        triggerTrace("Visual understanding parse complete. Added Tesla EV concept parameters directly into active CAD pipeline.");
+      } else {
+        setVisionAnalysisResult({
+          name: "Frezit Wood Mockup Sketch",
+          description: "Initial hand-drawn perspective outlines of experimental insulated pine caddy.",
+          materialsList: ["Redwood Pine planks", "Neoprene compression straps", "Expanded Polystyrene dry-ice caddy"],
+          components: [
+            { name: "Plywood outer block", function: "Physical structural support cage mimicking final caddy" },
+            { name: "Thermal insulation core", function: "Maintains below freezing interior temperatures" },
+            { name: "Acoustic rubber feet", function: "Absorbs vibration transmission to floor plates" }
+          ],
+          manufacturingAdvices: [
+            "Outer wall pine cannot resist regular biological liquids. Needs internal sanitary liner.",
+            "Consider CNC router-carving on standard Baltic Birch to improve rapid assembly tolerances."
+          ],
+          formStyle: "Crafted Flatpack Wood Furniture"
+        });
+        setAnalyzingImage(false);
+        triggerTrace("Visual understanding parse complete. Added wood-concept parameters directly into active Frezit CAD pipeline.");
+      }
     }, 1200);
   };
 
@@ -359,24 +426,63 @@ export default function ForgeMindJarvisEngine({
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
         
         {/* ========================================================
-           PANEL A: CANONICAL CASE STUDY (FREZIT SMART APPLIANCE)
+           PANEL A: CANONICAL CASE STUDY ENGINE WITH DUAL SELECTOR
            ======================================================== */}
         <div className="p-4 bg-gray-950 border border-gray-800 rounded-2xl flex flex-col justify-between space-y-4">
           <div className="space-y-3">
+            {/* Project/Case Selector Tabs */}
             <div className="flex items-center justify-between border-b border-gray-800 pb-2">
               <span className="font-mono text-[10px] uppercase font-bold text-gray-400 flex items-center gap-1">
                 <Box className="h-3 w-3 text-indigo-400" />
-                <span>Canonical Case Study: FREZIT</span>
+                <span>Industrial OS Canvas Focus</span>
               </span>
               <span className="px-1.5 py-0.5 bg-indigo-950 border border-indigo-900 text-indigo-400 font-mono text-[8.5px] uppercase font-bold rounded">
-                Industrial MVP Demo
+                Active Project Preset
               </span>
             </div>
+
+            <div className="grid grid-cols-2 gap-1.5 bg-gray-900 p-1 border border-gray-800 rounded-lg">
+              <button
+                type="button"
+                onClick={() => handleSwitchCaseStudy("tesla")}
+                className={`py-1.5 px-2 rounded font-sans text-left transition relative ${
+                  caseStudy === "tesla"
+                    ? "bg-blue-600 text-white font-bold"
+                    : "text-gray-400 hover:bg-gray-850 hover:text-gray-300"
+                }`}
+              >
+                <span className="block text-[10px] leading-tight">TSLA Skateboard</span>
+                <span className="block text-[8px] opacity-75 font-mono">CEO-to-Engineering Handoff</span>
+                {caseStudy === "tesla" && (
+                  <span className="absolute top-1 right-2 w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse" />
+                )}
+              </button>
+              <button
+                type="button"
+                onClick={() => handleSwitchCaseStudy("frezit")}
+                className={`py-1.5 px-2 rounded font-sans text-left transition relative ${
+                  caseStudy === "frezit"
+                    ? "bg-indigo-600 text-white font-bold"
+                    : "text-gray-400 hover:bg-gray-850 hover:text-gray-300"
+                }`}
+              >
+                <span className="block text-[10px] leading-tight">Frezit Smart Caddy</span>
+                <span className="block text-[8px] opacity-75 font-mono">Thermal Trash Appliance</span>
+                {caseStudy === "frezit" && (
+                  <span className="absolute top-1 right-2 w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse" />
+                )}
+              </button>
+            </div>
             
-            <p className="text-[11px] text-gray-400 font-light leading-relaxed">
-              Design a smart trash caddy that freezes organic waste to reduce smells, pests, and decomposition. 
-              Run it through VisualOS Industrial pipeline.
-            </p>
+            {caseStudy === "tesla" ? (
+              <p className="text-[11px] text-gray-400 font-light leading-relaxed">
+                <strong>CEO:</strong> "Give me a Tesla with the presence of a G-Wagon, Cybertruck width, shorter wheelbase, zero rear window, full EV skateboard, integrated safety cage, structural battery pack, and steer-by-wire layout."
+              </p>
+            ) : (
+              <p className="text-[11px] text-gray-400 font-light leading-relaxed">
+                <strong>Compost Team:</strong> "Design a smart trash caddy that freezes organic waste below zero to eliminate biological smells, flies, and container rot under tight sink spaces."
+              </p>
+            )}
 
             {/* Stage Selector Progress Steps */}
             <div className="grid grid-cols-5 gap-1 pt-1" id="frezit-stage-progress-steps">
@@ -384,7 +490,7 @@ export default function ForgeMindJarvisEngine({
                 <button
                   key={st}
                   type="button"
-                  onClick={() => handleSelectFrezitStage(st)}
+                  onClick={() => handleSelectStage(st)}
                   className={`py-1.5 rounded text-center transition-all ${
                     frezitStage === st
                       ? "bg-blue-600 text-white font-extrabold text-[11px]"
@@ -393,40 +499,47 @@ export default function ForgeMindJarvisEngine({
                       : "bg-slate-900 text-slate-500 text-[10px]"
                   }`}
                   title={`Select Stage ${st}: ${
-                    st === 1 ? "Ugly Sketch" : st === 2 ? "Product Illustration" : st === 3 ? "Engineering Takeoff" : st === 4 ? "DFM/BOM" : "Digital Twin Lite"
+                    st === 1 ? "Prompt to Sketch" : st === 2 ? "Structured Objects" : st === 3 ? "Engineering Takeoff" : st === 4 ? "DFM + BOM" : "Factory Handoff"
                   }`}
                 >
                   <span className="block font-sans text-[8px] opacity-75">ST 0{st}</span>
                   <span className="block font-bold leading-none mt-0.5">
-                    {st === 1 ? "Sketch" : st === 2 ? "Illust" : st === 3 ? "Take" : st === 4 ? "BOM" : "Twin"}
+                    {st === 1 ? "Sketch" : st === 2 ? "Object" : st === 3 ? "Takeoff" : st === 4 ? "DFM" : "Twin"}
                   </span>
                 </button>
               ))}
             </div>
 
             {/* Dynamic Stage Render Data */}
-            <div className={`p-3 bg-gray-900/60 border border-gray-850 rounded-xl relative overflow-hidden min-h-[175px] transition-all duration-300 ${frezitLoading ? 'opacity-40 scale-[0.99]' : 'opacity-100'}`}>
+            <div className={`p-3 bg-gray-900/60 border border-gray-850 rounded-xl relative overflow-hidden min-h-[220px] transition-all duration-300 ${frezitLoading ? 'opacity-40 scale-[0.99]' : 'opacity-100'}`}>
               
+              {/* STAGE 1: SKETCH BOARD */}
               {frezitStage === 1 && (
                 <div className="space-y-2 text-xs">
                   <div className="flex justify-between items-center text-[10px] font-mono text-amber-400 uppercase font-bold">
-                    <span>STAGE 1: ugly sketch core</span>
-                    <span>Napkin Presets</span>
+                    <span>STAGE 1: Prompt / Napkin Sketch</span>
+                    <span className="text-gray-500">Presets</span>
                   </div>
                   <p className="text-[11px] text-gray-300 font-light">
-                    Accepts photos, napkins, prompts, or existing formats to create a tidy concept board.
+                    Accepts rough whiteboard scans, verbal requirements, or napkins to create a crisp concept canvas board.
                   </p>
                   
                   <div className="grid grid-cols-2 gap-1.5 pt-1">
                     <button
                       type="button"
-                      onClick={() => loadNapkinPreset("https://images.unsplash.com/photo-1541123437800-1bb1317badc2?auto=format&fit=crop&w=400&q=80")}
+                      onClick={() => loadNapkinPreset(
+                        caseStudy === "tesla"
+                          ? "https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=400&q=80"
+                          : "https://images.unsplash.com/photo-1541123437800-1bb1317badc2?auto=format&fit=crop&w=400&q=80"
+                      )}
                       className="p-1.5 bg-slate-855 hover:bg-slate-800 rounded border border-gray-800 text-left text-[10px] flex items-center gap-1.5 transition truncate"
                     >
                       <ImageIcon className="h-3 w-3 text-amber-500 shrink-0" />
                       <div className="truncate">
-                        <span className="block font-sans font-bold text-gray-200">Load Napkin sketch</span>
-                        <span className="block font-mono text-[8px] text-gray-500">wood-pine-caddy.png</span>
+                        <span className="block font-sans font-bold text-gray-200">Load whiteboard</span>
+                        <span className="block font-mono text-[8px] text-gray-500">
+                          {caseStudy === "tesla" ? "tsla-g-skateboard.png" : "frezit-wood-draft.png"}
+                        </span>
                       </div>
                     </button>
                     
@@ -436,7 +549,7 @@ export default function ForgeMindJarvisEngine({
                       className="p-1.5 bg-slate-855 hover:bg-slate-800 rounded border border-gray-800 text-center text-[10px] flex flex-col items-center justify-center transition"
                     >
                       <Upload className="h-3.5 w-3.5 text-blue-400 mb-0.5" />
-                      <span className="font-sans font-bold text-gray-300">Upload Napkin Scan</span>
+                      <span className="font-sans font-bold text-gray-300">Upload custom scan</span>
                     </button>
                     <input
                       type="file"
@@ -451,24 +564,27 @@ export default function ForgeMindJarvisEngine({
                     <div className="p-2 border border-gray-800 bg-black/40 rounded-lg flex items-center gap-2">
                       <img src={uploadedImageUrl} className="h-10 w-10 object-cover rounded border" alt="Napkin Preview" />
                       <div className="flex-1 min-w-0 text-[10px]">
-                        <span className="font-bold text-gray-300 block truncate">Napkin drawing added</span>
-                        <span className="text-gray-500 font-mono">Status: Ready to Parse</span>
+                        <span className="font-bold text-gray-300 block truncate">Reference image locked</span>
+                        <span className="text-emerald-400 font-mono text-[9px] flex items-center gap-1">
+                          <span className="w-1 h-1 bg-emerald-400 rounded-full animate-ping" />
+                          Ready for OS Parser
+                        </span>
                       </div>
                     </div>
                   )}
 
                   {visionAnalysisResult && (
-                    <div className="p-2.5 bg-gray-950 rounded-lg border border-gray-800 text-[10.5px] space-y-1">
+                    <div className="p-2 bg-gray-950 rounded-lg border border-gray-850 text-[10px] space-y-1">
                       <div className="flex items-center gap-1 text-emerald-400 font-bold uppercase font-mono text-[9px]">
                         <CheckCircle className="h-3 w-3" />
-                        <span>Parsed concept locks: {visionAnalysisResult.name}</span>
+                        <span>Parsed locks: {visionAnalysisResult.name}</span>
                       </div>
-                      <p className="text-gray-400 text-[10px] font-light leading-tight">
+                      <p className="text-gray-400 text-[9.5px] font-light leading-tight">
                         {visionAnalysisResult.description}
                       </p>
-                      <div className="text-[10px] pt-1">
-                        <span className="font-bold text-white block uppercase text-[8px] tracking-wider mb-0.5">Estimated Modules:</span>
-                        <ul className="list-disc pl-3 text-slate-400 text-[9px] space-y-0.5">
+                      <div className="text-[9.5px] pt-1 leading-tight">
+                        <span className="font-bold text-white block uppercase text-[8px] tracking-wider mb-0.5">Identified Modules:</span>
+                        <ul className="list-disc pl-3 text-slate-400 text-[8.5px] space-y-0.5">
                           {visionAnalysisResult.components?.map((c: any, i: number) => (
                             <li key={i}><strong>{c.name}</strong>: {c.function}</li>
                           ))}
@@ -479,123 +595,221 @@ export default function ForgeMindJarvisEngine({
                 </div>
               )}
 
+              {/* STAGE 2: EDITABLE STRUCTURED OBJECTS */}
               {frezitStage === 2 && (
                 <div className="space-y-2 text-xs">
-                  <span className="text-[10px] font-mono text-cyan-400 uppercase font-bold block">STAGE 2: product illustration mode</span>
+                  <span className="text-[10px] font-mono text-cyan-400 uppercase font-bold block">STAGE 2: structured object graph</span>
                   <p className="text-[11px] text-gray-300 font-light leading-relaxed">
-                    Visualizes clear orthogonal blueprint alignments, exploded layers, and indicator label boards for engineering review.
+                    Converts flat concepts into editable structured parameters. Allows you to re-order components, adjust spacing clearances, or redefine layout constraints.
                   </p>
                   
-                  <div className="grid grid-cols-2 gap-1.5 text-[9.5px] font-mono text-gray-300">
-                    <div className="p-1.5 bg-slate-950/80 border rounded border-gray-800 leading-tight">
-                      <span className="font-bold block text-white text-[10px] mb-0.5">Front View (Silhouette)</span>
-                      <span>H: 450mm | Shape clarity</span>
+                  {caseStudy === "tesla" ? (
+                    <div className="grid grid-cols-2 gap-1.5 text-[9.5px] font-mono text-gray-300">
+                      <div className="p-1.5 bg-slate-950/80 border rounded border-gray-800 leading-tight">
+                        <span className="font-bold block text-white text-[10px] mb-0.5">Tactical Silhouette</span>
+                        <span>Height: 1950mm | G-Wagon presence</span>
+                      </div>
+                      <div className="p-1.5 bg-slate-950/80 border rounded border-gray-800 leading-tight">
+                        <span className="font-bold block text-white text-[10px] mb-0.5">Skateboard Width</span>
+                        <span>Width: 2030mm | Cybertruck axle hardpoints</span>
+                      </div>
+                      <div className="p-1.5 bg-slate-950/80 border rounded border-gray-800 leading-tight">
+                        <span className="font-bold block text-white text-[10px] mb-0.5">Shorter Base</span>
+                        <span>Wheelbase: 2950mm | Dynamic turning loop</span>
+                      </div>
+                      <div className="p-1.5 bg-slate-950/80 border rounded border-gray-800 leading-tight">
+                        <span className="font-bold block text-white text-[10px] mb-0.5">Omitted Rear Glass</span>
+                        <span>Solid 3mm panel, HD rear feed</span>
+                      </div>
                     </div>
-                    <div className="p-1.5 bg-slate-950/80 border rounded border-gray-800 leading-tight">
-                      <span className="font-bold block text-white text-[10px] mb-0.5">Side View (Vents)</span>
-                      <span>D: 320mm | Linear louvers</span>
+                  ) : (
+                    <div className="grid grid-cols-2 gap-1.5 text-[9.5px] font-mono text-gray-300">
+                      <div className="p-1.5 bg-slate-950/80 border rounded border-gray-800 leading-tight">
+                        <span className="font-bold block text-white text-[10px] mb-0.5">Outer Poly Case</span>
+                        <span>450mm High | Countertop fit</span>
+                      </div>
+                      <div className="p-1.5 bg-slate-950/80 border rounded border-gray-800 leading-tight">
+                        <span className="font-bold block text-white text-[10px] mb-0.5">Freeze Bin Access</span>
+                        <span>15L capacity | Polished Stainless</span>
+                      </div>
+                      <div className="p-1.5 bg-slate-950/80 border rounded border-gray-800 leading-tight">
+                        <span className="font-bold block text-white text-[10px] mb-0.5">Louvered Heat Vents</span>
+                        <span>Active grid on lower right flank</span>
+                      </div>
+                      <div className="p-1.5 bg-slate-950/80 border rounded border-gray-800 leading-tight">
+                        <span className="font-bold block text-white text-[10px] mb-0.5">Airtight Lid Rim</span>
+                        <span>Continuous Neoprene gasket seals</span>
+                      </div>
                     </div>
-                    <div className="p-1.5 bg-slate-950/80 border rounded border-gray-800 leading-tight">
-                      <span className="font-bold block text-white text-[10px] mb-0.5">Top View (Access)</span>
-                      <span>W: 280mm | Hinged airtight lid</span>
-                    </div>
-                    <div className="p-1.5 bg-slate-950/80 border rounded border-gray-800 leading-tight">
-                      <span className="font-bold block text-white text-[10px] mb-0.5">Exploded Assembly</span>
-                      <span>3 discrete layer offsets</span>
-                    </div>
-                  </div>
+                  )}
                 </div>
               )}
 
+              {/* STAGE 3: ENGINEERING TAKEOFF MODULES */}
               {frezitStage === 3 && (
                 <div className="space-y-2 text-xs">
-                  <span className="text-[10px] font-mono text-blue-400 uppercase font-bold block">STAGE 3: engineering takeoff mode</span>
+                  <span className="text-[10px] font-mono text-blue-400 uppercase font-bold block">STAGE 3: engineering takeoff</span>
                   <p className="text-[11px] text-gray-300 font-light">
-                    Direct automated parameters extraction for thermal structures, mechanical sizing and material loads.
+                    Direct visual extraction of the core system outputs, parameters, and layout zones. Excellent starting block for a 100-engineer team!
                   </p>
                   
-                  <div className="space-y-1.5 text-[10.5px]">
-                    <div className="flex justify-between items-center border-b border-gray-800/60 pb-1">
-                      <span className="text-gray-400 flex items-center gap-1">
-                        <Thermometer className="h-3 w-3 text-blue-500" />
-                        <span>Thermal Delta Core</span>
-                      </span>
-                      <span className="font-mono text-white font-bold">25°C to -10°C [Locked]</span>
+                  {caseStudy === "tesla" ? (
+                    <div className="max-h-[160px] overflow-y-auto space-y-1.5 pr-1 font-mono text-[9px]" id="tesla-takeoff-rows">
+                      <div className="flex justify-between items-center border-b border-gray-850 pb-1">
+                        <span className="text-gray-400">🚨 1. Exterior</span>
+                        <span className="text-white font-bold text-right">Polygonal tall box silhouette, steel panels</span>
+                      </div>
+                      <div className="flex justify-between items-center border-b border-gray-850 pb-1">
+                        <span className="text-gray-400">🛠 2. Chassis</span>
+                        <span className="text-white font-bold text-right">EV Skateboard platform, cast subframes</span>
+                      </div>
+                      <div className="flex justify-between items-center border-b border-gray-850 pb-1">
+                        <span className="text-gray-400">🔋 3. Battery</span>
+                        <span className="text-white font-bold text-right">4680 honeycomb pack frame</span>
+                      </div>
+                      <div className="flex justify-between items-center border-b border-gray-850 pb-1">
+                        <span className="text-gray-400">⚡ 4. Motor</span>
+                        <span className="text-white font-bold text-right">250kW front, PM Dual Torque vector rear</span>
+                      </div>
+                      <div className="flex justify-between items-center border-b border-gray-850 pb-1">
+                        <span className="text-gray-400">🔌 5. Wiring</span>
+                        <span className="text-white font-bold text-right">HV center corridor, Dual redundant signal rail</span>
+                      </div>
+                      <div className="flex justify-between items-center border-b border-gray-850 pb-1">
+                        <span className="text-gray-400">🛡 6. Safety Cage</span>
+                        <span className="text-white font-bold text-right">Cell-integrated Boron steel rollover cage</span>
+                      </div>
+                      <div className="flex justify-between items-center border-b border-gray-850 pb-1">
+                        <span className="text-gray-400">💻 7. Software</span>
+                        <span className="text-white font-bold text-right">Central domain, 12 zonal sensor controllers</span>
+                      </div>
                     </div>
-                    <div className="flex justify-between items-center border-b border-gray-800/60 pb-1">
-                      <span className="text-gray-400 flex items-center gap-1">
-                        <Zap className="h-3 w-3 text-amber-500" />
-                        <span>Power Requirement</span>
-                      </span>
-                      <span className="font-mono text-white font-bold">60W Mini continuous [COP 1.4]</span>
+                  ) : (
+                    <div className="space-y-1.5 text-[10px] font-mono">
+                      <div className="flex justify-between items-center border-b border-gray-800/60 pb-1">
+                        <span className="text-gray-400 flex items-center gap-1">
+                          <Thermometer className="h-3 w-3 text-blue-500" />
+                          <span>Thermal Delta Core</span>
+                        </span>
+                        <span className="font-mono text-white font-bold">25°C to -10°C [Locked]</span>
+                      </div>
+                      <div className="flex justify-between items-center border-b border-gray-800/60 pb-1">
+                        <span className="text-gray-400 flex items-center gap-1">
+                          <Zap className="h-3 w-3 text-amber-500" />
+                          <span>Power Draw</span>
+                        </span>
+                        <span className="font-mono text-white font-bold">60W continuous [COP 1.4]</span>
+                      </div>
+                      <div className="flex justify-between items-center border-b border-gray-800/60 pb-1">
+                        <span className="text-gray-400 flex items-center gap-1">
+                          <HardDrive className="h-3 w-3 text-indigo-400" />
+                          <span>Inner Chamber</span>
+                        </span>
+                        <span className="font-mono text-white font-bold">SS304 polished, anti-corrosive</span>
+                      </div>
+                      <div className="flex justify-between items-center pb-1">
+                        <span className="text-gray-400 flex items-center gap-1">
+                          <Layers className="h-3 w-3 text-purple-400" />
+                          <span>Insulation core</span>
+                        </span>
+                        <span className="font-mono text-white font-bold">25mm Vacuum panel structure</span>
+                      </div>
                     </div>
-                    <div className="flex justify-between items-center border-b border-gray-800/60 pb-1">
-                      <span className="text-gray-400 flex items-center gap-1">
-                        <HardDrive className="h-3 w-3 text-indigo-400" />
-                        <span>Organic Trash bin</span>
-                      </span>
-                      <span className="font-mono text-white font-bold">Grade 304 Polished Stainless</span>
-                    </div>
-                    <div className="flex justify-between items-center pb-1">
-                      <span className="text-gray-400 flex items-center gap-1">
-                        <Layers className="h-3 w-3 text-purple-400" />
-                        <span>Insulation barrier</span>
-                      </span>
-                      <span className="font-mono text-white font-bold">25mm Vacuum Insulation Panel</span>
-                    </div>
-                  </div>
+                  )}
                 </div>
               )}
 
+              {/* STAGE 4: DFM + BOM REPORT */}
               {frezitStage === 4 && (
                 <div className="space-y-2 text-xs">
-                  <span className="text-[10px] font-mono text-emerald-400 uppercase font-bold block">STAGE 4: DFM / BOM and validation mode</span>
+                  <span className="text-[10px] font-mono text-emerald-400 uppercase font-bold block">STAGE 4: DFM + BOM Report</span>
                   
-                  <div className="max-h-[140px] overflow-y-auto space-y-2 pr-1" id="frezit-stage4-data-rows">
-                    <div className="p-2 bg-slate-950/80 border rounded border-gray-850">
-                      <span className="font-bold text-white block text-[10px]">1. Final Bill of Materials (BOM)</span>
-                      <div className="font-mono text-[9px] text-gray-400 mt-1 space-y-0.5">
-                        <div>- 15L organic tank: SS304 plate [1 unit]</div>
-                        <div>- DC Rotary Compressor: 64W 12V [1 unit]</div>
-                        <div>- Airtight dual gasket: Neoprene mold [2 units]</div>
-                        <div>- Outer aesthetic case: ABS injection mold [1 casing]</div>
+                  {caseStudy === "tesla" ? (
+                    <div className="max-h-[160px] overflow-y-auto space-y-2 pr-1" id="tesla-bom-rows">
+                      <div className="p-2 bg-slate-950/80 border rounded border-gray-850">
+                        <span className="font-extrabold text-white block text-[10px]">1. Tesla Bill of Materials (BOM)</span>
+                        <div className="font-mono text-[9px] text-gray-400 mt-1 space-y-0.5">
+                          <div>- 3mm Pre-Stressed Steel Alloy Sheets [1 kit]</div>
+                          <div>- 4680 High-Capacity Battery Pack [120kWh] [1 assembly]</div>
+                          <div>- Front PMAC Drive + Inverter zones [1 unit]</div>
+                          <div>- Steer-by-wire hydraulic redundant rack [2 pairs]</div>
+                        </div>
+                      </div>
+                      <div className="p-2 bg-slate-950/80 border rounded border-gray-850">
+                        <span className="font-extrabold text-white block text-[10px]">2. DFM Manufacturability Advice</span>
+                        <div className="font-mono text-[8.5px] text-emerald-400 mt-1 leading-normal">
+                          ✓ Draft angles checked. Zero compound visual curves simplifies raw blanking tooling.
+                          <br />✔ Assembly Order: Frame skateboard chassis → slide front crumple structure → lay cell honeycomb matrix.
+                        </div>
                       </div>
                     </div>
-                    
-                    <div className="p-2 bg-slate-950/80 border rounded border-gray-850">
-                      <span className="font-bold text-white block text-[10px]">2. DFM Manufacturability Advice</span>
-                      <div className="font-mono text-[8.5px] text-emerald-400 mt-1 leading-normal">
-                        ✓ Mold Draft Angles: Checked. Set to 2.4° minimum everywhere for clean ejection patterns.
-                        <br />✔ Assembly Sequence: Lid pivot pins must insert before mounting inner bracket structure.
+                  ) : (
+                    <div className="max-h-[160px] overflow-y-auto space-y-2 pr-1" id="frezit-stage4-data-rows">
+                      <div className="p-2 bg-slate-950/80 border rounded border-gray-850">
+                        <span className="font-bold text-white block text-[10px]">1. Frezit Bill of Materials (BOM)</span>
+                        <div className="font-mono text-[9px] text-gray-400 mt-1 space-y-0.5">
+                          <div>- 15L organic tank: SS304 plate [1 unit]</div>
+                          <div>- DC Rotary Compressor: 64W 12V [1 unit]</div>
+                          <div>- Airtight dual gasket: Neoprene mold [2 units]</div>
+                          <div>- Outer aesthetic case: ABS injection mold [1 casing]</div>
+                        </div>
+                      </div>
+                      
+                      <div className="p-2 bg-slate-950/80 border rounded border-gray-850">
+                        <span className="font-bold text-white block text-[10px]">2. DFM Manufacturability Advice</span>
+                        <div className="font-mono text-[8.5px] text-emerald-400 mt-1 leading-normal">
+                          ✓ Mold Draft Angles: Checked. Set to 2.4° minimum everywhere for clean ejection patterns.
+                          <br />✔ Assembly Sequence: Lid pivot pins must insert before mounting inner bracket structure.
+                        </div>
                       </div>
                     </div>
-                  </div>
+                  )}
                 </div>
               )}
 
+              {/* STAGE 5: FACTORY PACKET / DIGITAL TWIN LITE */}
               {frezitStage === 5 && (
                 <div className="space-y-2 text-xs">
-                  <span className="text-[10px] font-mono text-rose-400 uppercase font-bold block">STAGE 5: Digital Twin Lite</span>
+                  <span className="text-[10px] font-mono text-rose-400 uppercase font-bold block">STAGE 5: Factory Packet / digital twin</span>
                   <p className="text-[11px] text-gray-300 font-light leading-relaxed">
-                    Evaluates spatial fits, maintenance room, thermal venting paths or tipping stress calculations.
+                    Performs physical load checks, clearance verification, sensor field-of-view, and heat path compliance audits before factory handoff.
                   </p>
                   
-                  <div className="space-y-1.5 text-[10px] font-mono">
-                    <div className="flex items-center gap-2 p-1 px-2 bg-emerald-950/40 border border-emerald-900 rounded-lg text-emerald-400">
-                      <CheckCircle className="h-3.5 w-3.5" />
-                      <span>Spatial fit check: compressor locates perfectly in base shell clear room.</span>
-                    </div>
-                    
-                    <div className="flex items-center gap-2 p-1 px-2 bg-emerald-950/40 border border-emerald-900 rounded-lg text-emerald-400">
-                      <CheckCircle className="h-3.5 w-3.5" />
-                      <span>Technician access tolerance check: service cover offers 28mm clearance.</span>
-                    </div>
+                  {caseStudy === "tesla" ? (
+                    <div className="space-y-1.5 text-[9.5px] font-mono">
+                      <div className="flex items-center gap-2 p-1 px-2 bg-emerald-950/40 border border-emerald-900 rounded-lg text-emerald-400">
+                        <CheckCircle className="h-3.5 w-3.5" />
+                        <span>Steer-by-wire geometry clearance: 45mm maintained at full tire steering angle.</span>
+                      </div>
+                      
+                      <div className="flex items-center gap-2 p-1 px-2 bg-emerald-950/40 border border-emerald-900 rounded-lg text-emerald-400">
+                        <CheckCircle className="h-3.5 w-3.5" />
+                        <span>Load-Path check: Integrated rollovers transmit 120kN evenly back to frame rails.</span>
+                      </div>
 
-                    <div className="flex items-center gap-2 p-1 px-2 bg-amber-950/40 border border-amber-900 rounded-lg text-amber-400">
-                      <AlertTriangle className="h-3.5 w-3.5 animate-pulse" />
-                      <span>Thermal ventilation audit: vents flow rate matches COP limits. 8°C heat sink alert.</span>
+                      <div className="flex items-center gap-2 p-1 px-2 bg-amber-950/40 border border-amber-900 rounded-lg text-amber-400">
+                        <AlertTriangle className="h-3.5 w-3.5 animate-pulse" />
+                        <span>Rear window camera audit: 180° digital rear feed is redundant but requires a dual-bus power grid.</span>
+                      </div>
                     </div>
-                  </div>
+                  ) : (
+                    <div className="space-y-1.5 text-[10px] font-mono">
+                      <div className="flex items-center gap-2 p-1 px-2 bg-emerald-950/40 border border-emerald-900 rounded-lg text-emerald-400">
+                        <CheckCircle className="h-3.5 w-3.5" />
+                        <span>Spatial fit check: compressor locates perfectly in base shell clear room.</span>
+                      </div>
+                      
+                      <div className="flex items-center gap-2 p-1 px-2 bg-emerald-950/40 border border-emerald-900 rounded-lg text-emerald-400">
+                        <CheckCircle className="h-3.5 w-3.5" />
+                        <span>Technician access tolerance check: service cover offers 28mm clearance.</span>
+                      </div>
+
+                      <div className="flex items-center gap-2 p-1 px-2 bg-amber-950/40 border border-amber-900 rounded-lg text-amber-400">
+                        <AlertTriangle className="h-3.5 w-3.5 animate-pulse" />
+                        <span>Thermal ventilation audit: vents flow rate matches COP limits. 8°C heat sink alert.</span>
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
 
@@ -603,9 +817,11 @@ export default function ForgeMindJarvisEngine({
           </div>
 
           <div className="p-2.5 bg-gray-900 border border-gray-800 rounded-xl leading-tight">
-            <span className="font-mono text-[8px] uppercase font-bold text-gray-500 block">Case Study Objective:</span>
+            <span className="font-mono text-[8px] uppercase font-bold text-gray-500 block">Active Mode Thesis:</span>
             <span className="text-[10px] text-gray-300">
-              VisualOS demonstrates taking raw blueprints, drafts and napkin ideas and parsing them to physical locked factory MVPs.
+              {caseStudy === "tesla"
+                ? "Direct CEO-to-Engineering handoff bridging visual requirements right into active, production-ready factory specifications."
+                : "Continuous product lifecycle pipeline transforming flat sketches into a fully validated thermal caddy."}
             </span>
           </div>
         </div>
@@ -870,20 +1086,41 @@ export default function ForgeMindJarvisEngine({
         {/* Query Suggestion chips */}
         <div className="flex flex-wrap gap-1.5 items-center pt-1">
           <span className="text-[9px] uppercase font-mono font-bold text-gray-500 block mr-1">Query Templates:</span>
-          <button
-            type="button"
-            onClick={() => setChatInput("Calculate required cooling power for Freezing bin 15L organic waste in 45 minutes using standard insulation")}
-            className="px-2.5 py-1 bg-slate-900 hover:bg-slate-800 border border-gray-800 text-[10px] rounded-lg transition text-gray-300"
-          >
-            Power sizing calculation
-          </button>
-          <button
-            type="button"
-            onClick={() => setChatInput("Evaluate SS304 vs polycarbonate inner liners for freezing chamber under extreme grease exposure")}
-            className="px-2.5 py-1 bg-slate-900 hover:bg-slate-800 border border-gray-800 text-[10px] rounded-lg transition text-gray-300"
-          >
-            Material optimization
-          </button>
+          {caseStudy === "tesla" ? (
+            <>
+              <button
+                type="button"
+                onClick={() => setChatInput("Formulate skateboard EV structural crash-zones and evaluate steering linkage clearances under static load")}
+                className="px-2.5 py-1 bg-slate-900 hover:bg-slate-800 border border-gray-800 text-[10px] rounded-lg transition text-gray-300"
+              >
+                Steer-by-wire static clearance
+              </button>
+              <button
+                type="button"
+                onClick={() => setChatInput("Calculate continuous ventilation path draft layout for 120kWh structural 4680 battery pack under peak fast-charge heat dispersion")}
+                className="px-2.5 py-1 bg-slate-900 hover:bg-slate-800 border border-gray-800 text-[10px] rounded-lg transition text-gray-300"
+              >
+                4680 Pack fluid heat dispersion
+              </button>
+            </>
+          ) : (
+            <>
+              <button
+                type="button"
+                onClick={() => setChatInput("Calculate required cooling power for Freezing bin 15L organic waste in 45 minutes using standard insulation")}
+                className="px-2.5 py-1 bg-slate-900 hover:bg-slate-800 border border-gray-800 text-[10px] rounded-lg transition text-gray-300"
+              >
+                Power sizing calculation
+              </button>
+              <button
+                type="button"
+                onClick={() => setChatInput("Evaluate SS304 vs polycarbonate inner liners for freezing chamber under extreme grease exposure")}
+                className="px-2.5 py-1 bg-slate-900 hover:bg-slate-800 border border-gray-800 text-[10px] rounded-lg transition text-gray-300"
+              >
+                Material optimization
+              </button>
+            </>
+          )}
         </div>
 
         {/* Input Form field */}
